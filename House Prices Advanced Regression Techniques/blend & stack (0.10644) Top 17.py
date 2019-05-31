@@ -1,40 +1,29 @@
-import numpy as np  # linear algebra
-import pandas as pd  #
 from datetime import datetime
+import numpy as np
+import pandas as pd
 
-from scipy.stats import skew  # for some statistics
+from scipy.stats import skew
 from scipy.special import boxcox1p
 from scipy.stats import boxcox_normmax
 
-from sklearn.linear_model import ElasticNetCV, LassoCV, RidgeCV
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.svm import SVR
-from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import RobustScaler
 from sklearn.model_selection import KFold, cross_val_score
+from sklearn.pipeline import make_pipeline
 from sklearn.metrics import mean_squared_error
 
+from sklearn.linear_model import ElasticNetCV, LassoCV, RidgeCV
+from sklearn.svm import SVR
+from sklearn.ensemble import GradientBoostingRegressor
 from mlxtend.regressor import StackingCVRegressor
-
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
 
-import os
-
-
-print(os.listdir("../input"))
-
-# Based on https://www.kaggle.com/hemingwei/top-2-from-laurenstc-on-house-price-prediction
 
 train = pd.read_csv('../input/house-prices-advanced-regression-techniques/train.csv')
 test = pd.read_csv('../input/house-prices-advanced-regression-techniques/test.csv')
-print("Train set size:", train.shape)
-print("Test set size:", test.shape)
-print('START data processing', datetime.now(), )
 
 train_ID = train['Id']
 test_ID = test['Id']
-# Now drop the  'Id' colum since it's unnecessary for  the prediction process.
 train.drop(['Id'], axis=1, inplace=True)
 test.drop(['Id'], axis=1, inplace=True)
 
@@ -42,27 +31,28 @@ test.drop(['Id'], axis=1, inplace=True)
 train = train[train.GrLivArea < 4500]
 train.reset_index(drop=True, inplace=True)
 
-# We use the numpy fuction log1p which  applies log(1+x) to all elements of the column
-train["SalePrice"] = np.log1p(train["SalePrice"])
+# Applying log(1 + x) to target
+train['SalePrice'] = np.log1p(train['SalePrice'])
+
 y = train.SalePrice.reset_index(drop=True)
 train_features = train.drop(['SalePrice'], axis=1)
 test_features = test
-
 features = pd.concat([train_features, test_features]).reset_index(drop=True)
 print(features.shape)
-# Some of the non-numeric predictors are stored as numbers; we convert them into strings 
+
+# Categorical data converted to str type 
 features['MSSubClass'] = features['MSSubClass'].apply(str)
 features['YrSold'] = features['YrSold'].astype(str)
 features['MoSold'] = features['MoSold'].astype(str)
 
+# Filling the missing categorical data
 features['Functional'] = features['Functional'].fillna('Typ')
 features['Electrical'] = features['Electrical'].fillna("SBrkr")
-features['KitchenQual'] = features['KitchenQual'].fillna("TA")
+features['KitchenQual'] = features['KitchenQual'].fillna('TA')
 features['Exterior1st'] = features['Exterior1st'].fillna(features['Exterior1st'].mode()[0])
 features['Exterior2nd'] = features['Exterior2nd'].fillna(features['Exterior2nd'].mode()[0])
 features['SaleType'] = features['SaleType'].fillna(features['SaleType'].mode()[0])
-
-features["PoolQC"] = features["PoolQC"].fillna("None")
+features["PoolQC"] = features["PoolQC"].fillna('None')
 
 for col in ('GarageYrBlt', 'GarageArea', 'GarageCars'):
     features[col] = features[col].fillna(0)
@@ -82,7 +72,7 @@ features.update(features[objects].fillna('None'))
 
 features['LotFrontage'] = features.groupby('Neighborhood')['LotFrontage'].transform(lambda x: x.fillna(x.median()))
 
-# Filling in the rest of the NA's
+# Filling the missing numerical data
 
 numeric_dtypes = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
 numerics = []
@@ -120,7 +110,7 @@ features['Total_porch_sf'] = (features['OpenPorchSF'] + features['3SsnPorch'] +
                               features['EnclosedPorch'] + features['ScreenPorch'] +
                               features['WoodDeckSF'])
 
-# simplified features
+# Simplified features
 features['haspool'] = features['PoolArea'].apply(lambda x: 1 if x > 0 else 0)
 features['has2ndfloor'] = features['2ndFlrSF'].apply(lambda x: 1 if x > 0 else 0)
 features['hasgarage'] = features['GarageArea'].apply(lambda x: 1 if x > 0 else 0)
@@ -292,23 +282,18 @@ print('Predict submission', datetime.now(),)
 submission = pd.read_csv("../input/house-prices-advanced-regression-techniques/sample_submission.csv")
 submission.iloc[:,1] = np.floor(np.expm1(blend_models_predict(X_sub)))
 
-# this kernel gave a score 0.114
-# let's up it by mixing with the top kernels
 
 print('Blend with Top Kernals submissions', datetime.now(),)
 sub_1 = pd.read_csv('../input/top-10-0-10943-stacking-mice-and-brutal-force/House_Prices_submit.csv')
 sub_2 = pd.read_csv('../input/hybrid-svm-benchmark-approach-0-11180-lb-top-2/hybrid_solution.csv')
 sub_3 = pd.read_csv('../input/lasso-model-for-regression-problem/lasso_sol22_Median.csv')
 sub_4 = pd.read_csv('../input/all-you-need-is-pca-lb-0-11421-top-4/submission.csv')
-# sub_5 = pd.read_csv('../input/house-prices-solution-0-107-lb/submission.csv') # fork my kernel again)
 
 submission.iloc[:,1] = np.floor((0.20 * np.floor(np.expm1(blend_models_predict(X_sub)))) + 
                                 (0.20 * sub_1.iloc[:,1]) + 
                                 (0.20 * sub_2.iloc[:,1]) + 
                                 (0.20 * sub_3.iloc[:,1]) +
-                                (0.20 * sub_4.iloc[:,1])  
-                                #(0.1 * sub_5.iloc[:,1])
-                                )
+                                (0.20 * sub_4.iloc[:,1]))
 
 
 # From https://www.kaggle.com/agehsbarg/top-10-0-10943-stacking-mice-and-brutal-force
