@@ -13,7 +13,3 @@ Those are the notebooks I published on Kaggle. All of the code are released unde
 * [IEEE-CIS Fraud Detection](https://www.kaggle.com/c/ieee-fraud-detection)
 * [NFL Big Data Bowl](https://www.kaggle.com/c/nfl-big-data-bowl-2020)
 * [ASHRAE - Great Energy Predictor III](https://www.kaggle.com/c/ashrae-energy-prediction)
-
-## Notebook Content
-* **ASHRAE - Great Energy Predictor III - EDA and Preprocessing** 
-
