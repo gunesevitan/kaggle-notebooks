@@ -13,3 +13,7 @@ Those are the notebooks I published on Kaggle. All of the code are released unde
 * [IEEE-CIS Fraud Detection](https://www.kaggle.com/c/ieee-fraud-detection)
 * [NFL Big Data Bowl](https://www.kaggle.com/c/nfl-big-data-bowl-2020)
 * [ASHRAE - Great Energy Predictor III](https://www.kaggle.com/c/ashrae-energy-prediction)
+* [University of Liverpool - Ion Switching](https://www.kaggle.com/c/liverpool-ion-switching)
+* [TReNDS Neuroimaging](https://www.kaggle.com/c/trends-assessment-prediction)
+* [OSIC Pulmonary Fibrosis Progression](https://www.kaggle.com/c/osic-pulmonary-fibrosis-progression)
+* [Mechanisms of Action (MoA) Prediction](https://www.kaggle.com/c/lish-moa)
