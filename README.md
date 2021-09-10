@@ -17,3 +17,7 @@ Those are the notebooks I published on Kaggle. All of the code are released unde
 * [TReNDS Neuroimaging](https://www.kaggle.com/c/trends-assessment-prediction)
 * [OSIC Pulmonary Fibrosis Progression](https://www.kaggle.com/c/osic-pulmonary-fibrosis-progression)
 * [Mechanisms of Action (MoA) Prediction](https://www.kaggle.com/c/lish-moa)
+* [Riiid Answer Correctness Prediction](https://www.kaggle.com/c/riiid-test-answer-prediction)
+* [Tabular Playground Series - Jan 2021](https://www.kaggle.com/c/tabular-playground-series-jan-2021)
+* [CommonLit Readability Prize](https://www.kaggle.com/c/commonlitreadabilityprize)
+* [Optiver Realized Volatility Prediction](https://www.kaggle.com/c/optiver-realized-volatility-prediction)
